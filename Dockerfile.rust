@@ -1,0 +1,11 @@
+# Stage 1: Build the Rust application
+FROM rust:1.56 as builder
+WORKDIR /usr/src/app
+COPY rust-wallet/Cargo.toml rust-wallet/Cargo.lock ./
+COPY rust-wallet/src ./src
+RUN cargo build --release
+
+# Stage 2: Package the executable in a minimal image
+FROM debian:buster-slim
+COPY --from=builder /usr/src/app/target/release/rust-wallet /usr/local/bin/rust-wallet
+CMD ["rust-wallet"]
